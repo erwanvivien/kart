@@ -3,6 +3,7 @@ use leafwing_input_manager::prelude::*;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
+mod camera;
 mod debug;
 mod input;
 mod kart;
@@ -40,6 +41,10 @@ fn main() {
     #[cfg(feature = "debug_input")]
     app.add_systems(Update, debug::input::report_pressed_actions);
     app.add_systems(Update, kart::update_kart_position);
+    app.add_systems(
+        Update,
+        camera::sync_camera_to_player.after(kart::update_kart_position),
+    );
 
     // Change InputMap clash strategy
     app.insert_resource(ClashStrategy::PrioritizeLongest);
@@ -87,9 +92,7 @@ fn setup(
         transform: Transform::from_xyz(4.0, 8.0, 4.0),
         ..default()
     });
+
     // camera
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
+    commands.spawn((Camera3dBundle::default(), camera::MainCamera::default()));
 }
