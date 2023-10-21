@@ -4,6 +4,7 @@ use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
 mod input;
+mod kart;
 
 use crate::input::Action;
 
@@ -35,6 +36,7 @@ fn main() {
 
     #[cfg(feature = "debug_input")]
     app.add_systems(Update, input::debug::report_pressed_actions);
+    app.add_systems(Update, kart::update_kart_position);
 
     // Change InputMap clash strategy
     app.insert_resource(ClashStrategy::PrioritizeLongest);
@@ -55,12 +57,23 @@ fn setup(
         ..default()
     });
     // cube
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        transform: Transform::from_xyz(0.0, 0.5, 0.0),
-        ..default()
-    });
+    commands.spawn((
+        PbrBundle {
+            mesh: meshes.add(Mesh::from(shape::Box {
+                min_x: -0.5,
+                max_x: 0.5,
+                min_y: -0.5,
+                max_y: 0f32,
+                min_z: -1f32,
+                max_z: 0.2f32,
+            })),
+            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: Transform::from_xyz(0.0, 0.5, 0.0),
+            ..default()
+        },
+        kart::Speed::default(),
+        kart::Kart::default(),
+    ));
     // light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
