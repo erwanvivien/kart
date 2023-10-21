@@ -18,4 +18,17 @@ opt-level = 3 # Compiles dependencies with optimizations
 
 [features]
 debug_input = []
-debug_all = ["debug_input"]
+
+# debug_screen enables the debug screen plugin
+# No values are logged by default
+debug_screen = []
+debug_screen_all = [
+    "debug_screen_fps",
+    "debug_screen_position",
+    "debug_screen_camera",
+]
+debug_screen_fps = ["debug_screen"]
+debug_screen_position = ["debug_screen"]
+debug_screen_camera = ["debug_screen"]
+
+debug_all = ["debug_input", "debug_screen_all"]

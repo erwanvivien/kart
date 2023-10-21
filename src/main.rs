@@ -3,6 +3,7 @@ use leafwing_input_manager::prelude::*;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
+mod debug;
 mod input;
 mod kart;
 
@@ -27,6 +28,8 @@ fn main() {
     let mut app = App::new();
 
     app.add_plugins(DefaultPlugins);
+    #[cfg(feature = "debug_screen")]
+    app.add_plugins(debug::screen::ScreenDebugPlugin);
     app.add_plugins(InputManagerPlugin::<Action>::default());
 
     app.init_resource::<ActionState<Action>>();
@@ -35,7 +38,7 @@ fn main() {
     app.add_systems(Startup, setup);
 
     #[cfg(feature = "debug_input")]
-    app.add_systems(Update, input::debug::report_pressed_actions);
+    app.add_systems(Update, debug::input::report_pressed_actions);
     app.add_systems(Update, kart::update_kart_position);
 
     // Change InputMap clash strategy
