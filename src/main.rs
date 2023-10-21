@@ -1,9 +1,23 @@
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::*;
+
+mod input;
+
+use crate::input::Action;
 
 fn main() {
+    // Load user input config
+    let input_config =
+        input::Manager::from_file("input.manager").expect("Failed to load input config");
+    let input_map: InputMap<Action> = input_config.into();
+
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_plugins(InputManagerPlugin::<Action>::default())
+        .init_resource::<ActionState<Action>>()
+        .insert_resource(input_map)
         .add_systems(Startup, setup)
+        .insert_resource(ClashStrategy::PrioritizeLongest)
         .run();
 }
 

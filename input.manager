@@ -1,0 +1,9 @@
+Manager(
+    {
+        [S]: Backward,
+        [Space]: Jump,
+        [Z]: Forward,
+        [Q]: Left,
+        [D]: Right,
+    },
+)
