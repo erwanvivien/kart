@@ -1977,6 +1977,8 @@ dependencies = [
  "leafwing-input-manager",
  "ron",
  "serde",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

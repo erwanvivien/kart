@@ -1,24 +1,45 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
+use tracing::Level;
+use tracing_subscriber::FmtSubscriber;
 
 mod input;
 
 use crate::input::Action;
 
 fn main() {
-    // Load user input config
+    // a builder for `FmtSubscriber`.
+    let subscriber = FmtSubscriber::builder()
+        // all spans/events with a level higher than TRACE (e.g, debug, info, warn, etc.)
+        // will be written to stdout.
+        .with_max_level(Level::TRACE)
+        .with_env_filter("kart")
+        // completes the builder.
+        .finish();
+
+    tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+
     let input_config =
         input::Manager::from_file("input.manager").expect("Failed to load input config");
     let input_map: InputMap<Action> = input_config.into();
 
-    App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(InputManagerPlugin::<Action>::default())
-        .init_resource::<ActionState<Action>>()
-        .insert_resource(input_map)
-        .add_systems(Startup, setup)
-        .insert_resource(ClashStrategy::PrioritizeLongest)
-        .run();
+    let mut app = App::new();
+
+    app.add_plugins(DefaultPlugins);
+    app.add_plugins(InputManagerPlugin::<Action>::default());
+
+    app.init_resource::<ActionState<Action>>();
+    app.insert_resource(input_map);
+
+    app.add_systems(Startup, setup);
+
+    #[cfg(feature = "debug_input")]
+    app.add_systems(Update, input::debug::report_pressed_actions);
+
+    // Change InputMap clash strategy
+    app.insert_resource(ClashStrategy::PrioritizeLongest);
+
+    app.run();
 }
 
 /// set up a simple 3D scene

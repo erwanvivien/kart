@@ -3,6 +3,9 @@ use std::collections::HashMap;
 use bevy::{prelude::*, reflect::TypePath};
 use leafwing_input_manager::prelude::*;
 
+#[cfg(feature = "debug_input")]
+pub mod debug;
+
 #[derive(serde::Deserialize, serde::Serialize)]
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 #[derive(Actionlike, TypePath)]
