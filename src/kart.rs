@@ -71,10 +71,16 @@ fn get_axis_input(action_state: &Res<ActionState<Action>>) -> (f32, f32) {
 }
 
 pub fn update_kart_position(
+    #[cfg(feature = "cheat_input_target")] input_target: Res<crate::input::InputTarget>,
     time: Res<Time>,
     action_state: Res<ActionState<Action>>,
     mut query: Query<(&mut Transform, &mut Speed, &Kart)>,
 ) {
+    #[cfg(feature = "cheat_input_target")]
+    if *input_target != crate::input::InputTarget::Kart {
+        return;
+    }
+
     // Basic algorithm from http://engineeringdotnet.blogspot.com/2010/04/simple-2d-car-physics-in-games.html
     let (mut transform, mut speed, kart) = query.single_mut();
 

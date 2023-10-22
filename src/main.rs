@@ -10,6 +10,11 @@ mod kart;
 
 use crate::input::Action;
 
+#[cfg(feature = "cheat")]
+const INPUT_FILE: &str = "input_cheat.manager";
+#[cfg(not(feature = "cheat"))]
+const INPUT_FILE: &str = "input.manager";
+
 fn main() {
     // a builder for `FmtSubscriber`.
     let subscriber = FmtSubscriber::builder()
@@ -22,8 +27,7 @@ fn main() {
 
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
-    let input_config =
-        input::Manager::from_file("input.manager").expect("Failed to load input config");
+    let input_config = input::Manager::from_file(INPUT_FILE).expect("Failed to load input config");
     let input_map: InputMap<Action> = input_config.into();
 
     let mut app = App::new();
@@ -36,10 +40,15 @@ fn main() {
     app.init_resource::<ActionState<Action>>();
     app.insert_resource(input_map);
 
+    #[cfg(feature = "cheat_input_target")]
+    app.insert_resource(input::InputTarget::Kart);
+
     app.add_systems(Startup, setup);
 
     #[cfg(feature = "debug_input")]
     app.add_systems(Update, debug::input::report_pressed_actions);
+    #[cfg(feature = "cheat_input_target")]
+    app.add_systems(Update, input::change_input_target);
     app.add_systems(Update, kart::update_kart_position);
     app.add_systems(
         Update,

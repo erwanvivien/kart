@@ -33,4 +33,8 @@ debug_screen_position = ["debug_screen"]
 debug_screen_camera = ["debug_screen"]
 debug_screen_speed = ["debug_screen"]
 
-debug_all = ["debug_input", "debug_screen_all"]
+cheat = []
+cheat_all = ["cheat_input_target"]
+cheat_input_target = ["cheat"]     # Toggles target input between camera / player
+
+debug_all = ["debug_input", "debug_screen_all", "cheat_all"]

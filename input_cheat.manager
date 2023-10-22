@@ -1,0 +1,12 @@
+Manager(
+    {
+        [S]: Backward,
+        [Space]: Jump,
+        [Z]: Forward,
+        [Q]: Left,
+        [D]: Right,
+        [ControlLeft, T]: ChangeInputTarget,
+        [Space]: CameraUp,
+        [ShiftLeft]: CameraDown,
+    },
+)
