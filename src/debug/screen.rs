@@ -28,6 +28,10 @@ pub struct PositionDebug;
 #[derive(Component)]
 pub struct CameraDebug;
 
+#[cfg(feature = "debug_screen_speed")]
+#[derive(Component)]
+pub struct SpeedDebug;
+
 pub struct ScreenDebugPlugin;
 
 fn layout_text(mut commands: Commands) {
@@ -68,6 +72,14 @@ fn layout_text(mut commands: Commands) {
 
         commands.spawn((CameraDebug, text_bundle));
     }
+
+    #[cfg(feature = "debug_screen_speed")]
+    {
+        let text_bundle = TextBundle::from_sections([TextSection::new("", default_text_style())])
+            .with_style(get_offset_style());
+
+        commands.spawn((SpeedDebug, text_bundle));
+    }
 }
 
 impl Plugin for ScreenDebugPlugin {
@@ -83,6 +95,8 @@ impl Plugin for ScreenDebugPlugin {
         app.add_systems(Update, position_debug);
         #[cfg(feature = "debug_screen_camera")]
         app.add_systems(Update, camera_debug);
+        #[cfg(feature = "debug_screen_speed")]
+        app.add_systems(Update, speed_debug);
     }
 }
 
@@ -130,4 +144,20 @@ pub fn camera_debug(
     let position = camera_transform.translation.to_array();
     let rotation = camera_transform.rotation.to_euler(EulerRot::YXZ);
     text.sections[0].value = format!("Camera: Position {position:.2?} | Rotation {rotation:.2?}");
+}
+
+#[cfg(feature = "debug_screen_speed")]
+pub fn speed_debug(
+    mut query: Query<&mut Text, With<SpeedDebug>>,
+    player: Query<(&crate::kart::Speed, &crate::kart::Kart), Without<SpeedDebug>>,
+) {
+    let (player_speed, _) = player.single();
+
+    let mut text_query = query.single_mut();
+    let text = text_query.as_mut();
+
+    let current_speed = player_speed.forward_speed;
+    let acceleration = player_speed.acceleration;
+    text.sections[0].value =
+        format!("Kart Speed: {current_speed:.2}m/s | Acceleration {acceleration:.2}m/s2");
 }
