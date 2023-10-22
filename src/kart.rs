@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 
-use crate::input::Action;
+use crate::input::{get_axis_input, Action};
 
 #[derive(Debug, Component)]
 pub struct Speed {
@@ -16,6 +16,20 @@ impl Default for Speed {
         Self {
             acceleration: 0f32,
             forward_speed: 0f32,
+        }
+    }
+}
+
+#[allow(unused)]
+#[derive(Debug, Component, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum KartVariants {
+    Kart,
+}
+
+impl ToString for KartVariants {
+    fn to_string(&self) -> String {
+        match *self {
+            KartVariants::Kart => String::from("kart"),
         }
     }
 }
@@ -41,33 +55,6 @@ impl Default for Kart {
             wheel_distance: 2f32,
         }
     }
-}
-
-/// Return (forward, right) velocity, both ranges from -1 to 1
-fn get_axis_input(action_state: &Res<ActionState<Action>>) -> (f32, f32) {
-    let forward_pressed = action_state.pressed(Action::Forward);
-    let backward_pressed = action_state.pressed(Action::Backward);
-
-    let mut velocity = 0f32;
-    if forward_pressed {
-        velocity += 1f32;
-    }
-    if backward_pressed {
-        velocity -= 1f32;
-    }
-
-    let left_pressed = action_state.pressed(Action::Left);
-    let right_pressed = action_state.pressed(Action::Right);
-
-    let mut steering = 0f32;
-    if left_pressed {
-        steering += 1f32;
-    }
-    if right_pressed {
-        steering -= 1f32;
-    }
-
-    (velocity, steering)
 }
 
 pub fn update_kart_position(

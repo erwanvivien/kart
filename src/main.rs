@@ -63,33 +63,28 @@ fn main() {
 
 /// set up a simple 3D scene
 fn setup(
+    asset_server: Res<AssetServer>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // plane
     commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(5.0).into()),
+        mesh: meshes.add(shape::Plane::from_size(500.0).into()),
         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
         ..default()
     });
-    // cube
+
+    // player
+    let kart_handle = asset_server.load("karts/kart.glb#Scene0");
     commands.spawn((
-        PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Box {
-                min_x: -0.5,
-                max_x: 0.5,
-                min_y: -0.5,
-                max_y: 0f32,
-                min_z: -1f32,
-                max_z: 0.2f32,
-            })),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(0.0, 0.5, 0.0),
+        SceneBundle {
+            scene: kart_handle,
             ..default()
         },
         kart::Speed::default(),
         kart::Kart::default(),
+        kart::KartVariants::Kart,
     ));
     // light
     commands.spawn(PointLightBundle {

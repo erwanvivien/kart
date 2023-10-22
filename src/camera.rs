@@ -18,15 +18,20 @@ pub struct MainCamera {
     ///
     /// `[0, 0, 0]` means it'll look at the player's position
     pub look_at: Vec3,
+    /// The camera offset, relative to the player's position
+    ///
+    /// `[0, 0, 0]` means the camera is in the player's position
+    pub arm: Vec3,
 }
 
-const CAMERA_ARM: Vec3 = Vec3::new(0f32, 1f32, -4f32);
+const CAMERA_ARM: Vec3 = Vec3::new(0f32, 3f32, -6.5f32);
 
 impl Default for MainCamera {
     fn default() -> Self {
         Self {
-            smoothness: 0.1,
+            smoothness: 1f32,
             look_at: Vec3::Y * 1.5f32,
+            arm: CAMERA_ARM,
         }
     }
 }
@@ -108,7 +113,7 @@ pub fn sync_camera_to_player(
 
     // Update the camera position to be behind the player
 
-    let target = player_transform.translation + player_transform.rotation * CAMERA_ARM;
+    let target = player_transform.translation + player_transform.rotation * camera.arm;
 
     camera_transform.translation = camera_transform
         .translation
