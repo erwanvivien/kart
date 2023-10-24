@@ -34,7 +34,8 @@ debug_screen_camera = ["debug_screen"]
 debug_screen_speed = ["debug_screen"]
 
 cheat = []
-cheat_all = ["cheat_input_target"]
-cheat_input_target = ["cheat"]     # Toggles target input between camera / player
+cheat_all = ["cheat_input_target", "cheat_kart_change"]
+cheat_input_target = ["cheat"]                          # Toggles target input between camera / player
+cheat_kart_change = ["cheat"]                           # Changes the player's kart
 
 debug_all = ["debug_input", "debug_screen_all", "cheat_all"]

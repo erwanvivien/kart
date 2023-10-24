@@ -49,6 +49,8 @@ fn main() {
     app.add_systems(Update, debug::input::report_pressed_actions);
     #[cfg(feature = "cheat_input_target")]
     app.add_systems(Update, input::change_input_target);
+    #[cfg(feature = "cheat_kart_change")]
+    app.add_systems(Update, input::change_kart);
     app.add_systems(Update, kart::update_kart_position);
     app.add_systems(
         Update,
@@ -76,15 +78,15 @@ fn setup(
     });
 
     // player
-    let kart_handle = asset_server.load("karts/kart.glb#Scene0");
+    let kart_variant = kart::KartVariants::default();
     commands.spawn((
         SceneBundle {
-            scene: kart_handle,
+            scene: asset_server.load(&kart_variant.asset_path()),
             ..default()
         },
         kart::Speed::default(),
         kart::Kart::default(),
-        kart::KartVariants::Kart,
+        kart_variant,
     ));
     // light
     commands.spawn(PointLightBundle {

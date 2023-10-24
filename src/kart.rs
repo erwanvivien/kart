@@ -21,15 +21,43 @@ impl Default for Speed {
 }
 
 #[allow(unused)]
-#[derive(Debug, Component, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Component, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum KartVariants {
-    Kart,
+    #[default]
+    Sedan,
+    Sports,
+    Muscle,
+    MonsterTruck,
+    Police,
 }
 
 impl ToString for KartVariants {
     fn to_string(&self) -> String {
         match *self {
-            KartVariants::Kart => String::from("kart"),
+            KartVariants::Sedan => String::from("sedan"),
+            KartVariants::Sports => String::from("sports"),
+            KartVariants::Muscle => String::from("muscle"),
+            KartVariants::MonsterTruck => String::from("monster_truck"),
+            KartVariants::Police => String::from("police"),
+        }
+    }
+}
+
+impl KartVariants {
+    pub fn asset_path(&self) -> String {
+        format!("karts/{}.glb#Scene0", self.to_string())
+    }
+}
+
+#[cfg(feature = "cheat_input_target")]
+impl KartVariants {
+    pub fn next(&self) -> Self {
+        match *self {
+            KartVariants::Sedan => KartVariants::Sports,
+            KartVariants::Sports => KartVariants::Muscle,
+            KartVariants::Muscle => KartVariants::MonsterTruck,
+            KartVariants::MonsterTruck => KartVariants::Police,
+            KartVariants::Police => KartVariants::Sedan,
         }
     }
 }

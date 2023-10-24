@@ -27,6 +27,8 @@ pub enum Action {
     #[cfg(feature = "cheat")]
     CameraMouse,
 
+    #[cfg(feature = "cheat")]
+    ChangeKart,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -97,5 +99,23 @@ pub fn change_input_target(
         };
 
         tracing::info!("Changing input target to {:?}", *input_target);
+    }
+}
+
+#[cfg(feature = "cheat_kart_change")]
+pub fn change_kart(
+    action_state: Res<ActionState<Action>>,
+    asset_server: Res<AssetServer>,
+    mut query: Query<(&mut Handle<Scene>, &mut crate::kart::KartVariants)>,
+) {
+    if action_state.just_pressed(Action::ChangeKart) {
+        let (mut scene_handle, mut kart_variant) = query.single_mut();
+        let scene_mut = scene_handle.as_mut();
+        let kart_variant = kart_variant.as_mut();
+
+        *kart_variant = kart_variant.next();
+        *scene_mut = asset_server.load(kart_variant.asset_path());
+
+        tracing::info!("Changing kart to {kart_variant:?}");
     }
 }

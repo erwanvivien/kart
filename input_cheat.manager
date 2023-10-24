@@ -8,5 +8,6 @@ Manager(
         [ControlLeft, T]: ChangeInputTarget,
         [Space]: CameraUp,
         [ShiftLeft]: CameraDown,
+        [ControlLeft, K]: ChangeKart,
     },
 )
