@@ -36,6 +36,8 @@ fn main() {
     #[cfg(feature = "debug_screen")]
     app.add_plugins(debug::screen::ScreenDebugPlugin);
     app.add_plugins(InputManagerPlugin::<Action>::default());
+    #[cfg(feature = "debug_axis")]
+    app.add_plugins(bevy_debug_grid::DebugGridPlugin::with_floor_grid());
 
     app.init_resource::<ActionState<Action>>();
     app.insert_resource(input_map);

@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.11.3"
+bevy_debug_grid = { version = "0.2.1", optional = true }
 leafwing-input-manager = "0.10.0"
 ron = "0.8.1"
 serde = { version = "1.0.189", features = ["derive"] }
@@ -32,6 +33,9 @@ debug_screen_fps = ["debug_screen"]
 debug_screen_position = ["debug_screen"]
 debug_screen_camera = ["debug_screen"]
 debug_screen_speed = ["debug_screen"]
+
+# debug_axis enables the X/Y/Z axis and adds a grid
+debug_axis = ["debug_screen", "dep:bevy_debug_grid"]
 
 cheat = []
 cheat_all = ["cheat_input_target", "cheat_kart_change"]
