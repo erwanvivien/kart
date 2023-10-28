@@ -66,16 +66,10 @@ fn main() {
 }
 
 /// set up a simple 3D scene
-fn setup(
-    asset_server: Res<AssetServer>,
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+fn setup(asset_server: Res<AssetServer>, mut commands: Commands) {
     // plane
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(500.0).into()),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+    commands.spawn(SceneBundle {
+        scene: asset_server.load("terrains/map01.glb#Scene0"),
         ..default()
     });
 
