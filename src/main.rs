@@ -1,8 +1,11 @@
+use assets::{AssetLoadingState, KartAssets, TerrainAssets};
 use bevy::prelude::*;
+use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt};
 use leafwing_input_manager::prelude::*;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
+mod assets;
 mod camera;
 mod debug;
 mod input;
@@ -39,24 +42,39 @@ fn main() {
     #[cfg(feature = "debug_axis")]
     app.add_plugins(bevy_debug_grid::DebugGridPlugin::with_floor_grid());
 
+    app.add_state::<AssetLoadingState>();
+    app.add_loading_state(
+        LoadingState::new(AssetLoadingState::AssetLoading)
+            .continue_to_state(AssetLoadingState::Done),
+    );
+    app.add_collection_to_loading_state::<_, KartAssets>(AssetLoadingState::AssetLoading);
+    app.add_collection_to_loading_state::<_, TerrainAssets>(AssetLoadingState::AssetLoading);
+
+    app.add_systems(OnEnter(AssetLoadingState::Done), || {
+        tracing::info!("Assets loaded!");
+    });
+
     app.init_resource::<ActionState<Action>>();
     app.insert_resource(input_map);
 
     #[cfg(feature = "cheat_input_target")]
     app.insert_resource(input::InputTarget::Kart);
 
-    app.add_systems(Startup, setup);
-
-    #[cfg(feature = "debug_input")]
-    app.add_systems(Update, debug::input::report_pressed_actions);
-    #[cfg(feature = "cheat_input_target")]
-    app.add_systems(Update, input::change_input_target);
-    #[cfg(feature = "cheat_kart_change")]
-    app.add_systems(Update, input::change_kart);
-    app.add_systems(Update, kart::update_kart_position);
+    app.add_systems(OnEnter(AssetLoadingState::Done), setup);
     app.add_systems(
         Update,
-        camera::sync_camera_to_player.after(kart::update_kart_position),
+        (
+            #[cfg(feature = "cheat_kart_change")]
+            input::change_kart,
+            #[cfg(feature = "cheat_input_target")]
+            input::change_input_target,
+            #[cfg(feature = "debug_input")]
+            debug::input::report_pressed_actions,
+            // Normal systems
+            kart::update_kart_position,
+            camera::sync_camera_to_player.after(kart::update_kart_position),
+        )
+            .run_if(in_state(AssetLoadingState::Done)),
     );
 
     // Change InputMap clash strategy
@@ -66,10 +84,14 @@ fn main() {
 }
 
 /// set up a simple 3D scene
-fn setup(asset_server: Res<AssetServer>, mut commands: Commands) {
+fn setup(
+    terrain_assets: Res<assets::TerrainAssets>,
+    kart_assets: Res<assets::KartAssets>,
+    mut commands: Commands,
+) {
     // plane
     commands.spawn(SceneBundle {
-        scene: asset_server.load("terrains/map01.glb#Scene0"),
+        scene: terrain_assets.track.clone(),
         ..default()
     });
 
@@ -77,7 +99,7 @@ fn setup(asset_server: Res<AssetServer>, mut commands: Commands) {
     let kart_variant = kart::KartVariants::default();
     commands.spawn((
         SceneBundle {
-            scene: asset_server.load(&kart_variant.asset_path()),
+            scene: kart_variant.get_handle(&kart_assets),
             ..default()
         },
         kart::Speed::default(),

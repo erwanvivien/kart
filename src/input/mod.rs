@@ -105,7 +105,7 @@ pub fn change_input_target(
 #[cfg(feature = "cheat_kart_change")]
 pub fn change_kart(
     action_state: Res<ActionState<Action>>,
-    asset_server: Res<AssetServer>,
+    kart_assets: Res<crate::assets::KartAssets>,
     mut query: Query<(&mut Handle<Scene>, &mut crate::kart::KartVariants)>,
 ) {
     if action_state.just_pressed(Action::ChangeKart) {
@@ -114,7 +114,7 @@ pub fn change_kart(
         let kart_variant = kart_variant.as_mut();
 
         *kart_variant = kart_variant.next();
-        *scene_mut = asset_server.load(kart_variant.asset_path());
+        *scene_mut = kart_variant.get_handle(&kart_assets);
 
         tracing::info!("Changing kart to {kart_variant:?}");
     }

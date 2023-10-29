@@ -89,14 +89,20 @@ impl Plugin for ScreenDebugPlugin {
 
         app.add_systems(Startup, layout_text);
 
-        #[cfg(feature = "debug_screen_fps")]
-        app.add_systems(Update, fps_debug);
-        #[cfg(feature = "debug_screen_position")]
-        app.add_systems(Update, position_debug);
-        #[cfg(feature = "debug_screen_camera")]
-        app.add_systems(Update, camera_debug);
-        #[cfg(feature = "debug_screen_speed")]
-        app.add_systems(Update, speed_debug);
+        app.add_systems(
+            Update,
+            (
+                #[cfg(feature = "debug_screen_fps")]
+                fps_debug,
+                #[cfg(feature = "debug_screen_position")]
+                position_debug,
+                #[cfg(feature = "debug_screen_camera")]
+                camera_debug,
+                #[cfg(feature = "debug_screen_speed")]
+                speed_debug,
+            )
+                .run_if(in_state(crate::AssetLoadingState::Done)),
+        );
     }
 }
 

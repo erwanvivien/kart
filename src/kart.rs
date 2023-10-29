@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 
-use crate::input::{get_axis_input, Action};
+use crate::{
+    assets::KartAssets,
+    input::{get_axis_input, Action},
+};
 
 #[derive(Debug, Component)]
 pub struct Speed {
@@ -31,21 +34,15 @@ pub enum KartVariants {
     Police,
 }
 
-impl ToString for KartVariants {
-    fn to_string(&self) -> String {
-        match *self {
-            KartVariants::Sedan => String::from("sedan"),
-            KartVariants::Sports => String::from("sports"),
-            KartVariants::Muscle => String::from("muscle"),
-            KartVariants::MonsterTruck => String::from("monster_truck"),
-            KartVariants::Police => String::from("police"),
-        }
-    }
-}
-
 impl KartVariants {
-    pub fn asset_path(&self) -> String {
-        format!("karts/{}.glb#Scene0", self.to_string())
+    pub fn get_handle(&self, assets: &KartAssets) -> Handle<Scene> {
+        match *self {
+            KartVariants::Sedan => assets.sedan.clone(),
+            KartVariants::Sports => assets.sports.clone(),
+            KartVariants::Muscle => assets.muscle.clone(),
+            KartVariants::MonsterTruck => assets.monster_truck.clone(),
+            KartVariants::Police => assets.police.clone(),
+        }
     }
 }
 
