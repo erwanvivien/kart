@@ -588,6 +588,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_gltf_components"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5601991afc3e35b8e643c6e2a9c6345b966c250e981659ab8762ce8c381ed9a6"
+dependencies = [
+ "bevy",
+ "ron",
+ "serde",
+]
+
+[[package]]
 name = "bevy_hierarchy"
 version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2008,6 +2019,7 @@ dependencies = [
  "bevy",
  "bevy_asset_loader",
  "bevy_debug_grid",
+ "bevy_gltf_components",
  "leafwing-input-manager",
  "ron",
  "serde",

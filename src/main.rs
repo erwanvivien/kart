@@ -1,6 +1,8 @@
 use assets::{AssetLoadingState, KartAssets, TerrainAssets};
 use bevy::prelude::*;
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt};
+use bevy_gltf_components::ComponentsFromGltfPlugin;
+use kart::{BackWheels, FrontWheels};
 use leafwing_input_manager::prelude::*;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -39,6 +41,7 @@ fn main() {
     #[cfg(feature = "debug_screen")]
     app.add_plugins(debug::screen::ScreenDebugPlugin);
     app.add_plugins(InputManagerPlugin::<Action>::default());
+    app.add_plugins(ComponentsFromGltfPlugin);
     #[cfg(feature = "debug_axis")]
     app.add_plugins(bevy_debug_grid::DebugGridPlugin::with_floor_grid());
 
@@ -60,7 +63,12 @@ fn main() {
     #[cfg(feature = "cheat_input_target")]
     app.insert_resource(input::InputTarget::Kart);
 
+    // Needed for the `ComponentsFromGltfPlugin`
+    app.register_type::<FrontWheels>();
+    app.register_type::<BackWheels>();
+
     app.add_systems(OnEnter(AssetLoadingState::Done), setup);
+
     app.add_systems(
         Update,
         (
@@ -72,6 +80,7 @@ fn main() {
             debug::input::report_pressed_actions,
             // Normal systems
             kart::update_kart_position,
+            kart::update_front_wheels,
             camera::sync_camera_to_player.after(kart::update_kart_position),
         )
             .run_if(in_state(AssetLoadingState::Done)),

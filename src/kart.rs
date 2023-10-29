@@ -59,6 +59,14 @@ impl KartVariants {
     }
 }
 
+#[derive(Debug, Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct FrontWheels;
+
+#[derive(Debug, Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct BackWheels;
+
 #[derive(Debug, Component)]
 pub struct Kart {
     /// Maximum speed in meters per second
@@ -124,4 +132,25 @@ pub fn update_kart_position(
 
     transform.translation = new_position;
     transform.rotation = new_rotation;
+}
+
+pub fn update_front_wheels(
+    #[cfg(feature = "cheat_input_target")] input_target: Res<crate::input::InputTarget>,
+    action_state: Res<ActionState<Action>>,
+    mut query: Query<&mut Transform, With<FrontWheels>>,
+    kart_query: Query<&Kart>,
+) {
+    #[cfg(feature = "cheat_input_target")]
+    if *input_target != crate::input::InputTarget::Kart {
+        return;
+    }
+
+    let (_, input_steering) = get_axis_input(&action_state);
+
+    let kart = kart_query.single();
+    let steering_angle = input_steering * kart.max_steering_angle;
+
+    for mut transform in query.iter_mut() {
+        transform.rotation = Quat::from_rotation_y(steering_angle);
+    }
 }
