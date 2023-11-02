@@ -7,6 +7,9 @@ use leafwing_input_manager::prelude::*;
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
+#[cfg(all(not(debug_assertions), feature = "dynamic_linking"))]
+compile_error!("Dynamic linking should not supported for release builds");
+
 mod assets;
 mod camera;
 mod debug;

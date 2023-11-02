@@ -44,4 +44,6 @@ cheat_all = ["cheat_input_target", "cheat_kart_change"]
 cheat_input_target = ["cheat"]                          # Toggles target input between camera / player
 cheat_kart_change = ["cheat"]                           # Changes the player's kart
 
-debug_all = ["debug_input", "debug_screen_all", "cheat_all"]
+dynamic_linking = ["bevy/dynamic_linking"]
+
+debug_all = ["debug_input", "debug_screen_all", "cheat_all", "dynamic_linking"]
