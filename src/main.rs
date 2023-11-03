@@ -2,6 +2,7 @@ use assets::{AssetLoadingState, KartAssets, TerrainAssets};
 use bevy::prelude::*;
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt};
 use bevy_gltf_components::ComponentsFromGltfPlugin;
+use bevy_rapier3d::prelude::*;
 use kart::{BackWheels, FrontWheels};
 use leafwing_input_manager::prelude::*;
 use tracing::Level;
@@ -15,6 +16,7 @@ mod camera;
 mod debug;
 mod input;
 mod kart;
+mod physics;
 
 use crate::input::Action;
 
@@ -47,6 +49,10 @@ fn main() {
     app.add_plugins(ComponentsFromGltfPlugin);
     #[cfg(feature = "debug_axis")]
     app.add_plugins(bevy_debug_grid::DebugGridPlugin::with_floor_grid());
+    app.add_plugins(RapierPhysicsPlugin::<NoUserData>::default());
+    app.add_plugins(physics::GltfColliderPlugin);
+    #[cfg(feature = "debug_rapier")]
+    app.add_plugins(RapierDebugRenderPlugin::default());
 
     app.add_state::<AssetLoadingState>();
     app.add_loading_state(
@@ -102,16 +108,23 @@ fn setup(
     mut commands: Commands,
 ) {
     // plane
-    commands.spawn(SceneBundle {
-        scene: terrain_assets.track.clone(),
-        ..default()
-    });
+
+    commands.spawn((
+        SceneBundle {
+            scene: terrain_assets.map01.clone(),
+            ..default()
+        },
+        RigidBody::Fixed,
+        Collider::cuboid(10f32, 0.5f32, 10f32),
+        Transform::from_xyz(0.0, -0.5, 0.0),
+    ));
 
     // player
     let kart_variant = kart::KartVariants::default();
     commands.spawn((
         SceneBundle {
             scene: kart_variant.get_handle(&kart_assets),
+            transform: Transform::from_xyz(0.0, 0.3f32, 0.0),
             ..default()
         },
         kart::Speed::default(),

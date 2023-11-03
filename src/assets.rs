@@ -25,5 +25,7 @@ pub struct KartAssets {
 #[derive(Resource, AssetCollection)]
 pub struct TerrainAssets {
     #[asset(path = "terrains/map01.glb#Scene0")]
-    pub track: Handle<Scene>,
+    pub map01: Handle<Scene>,
+    #[asset(path = "terrains/map01.glb#Mesh0/Primitive0")]
+    pub map01_mesh: Handle<Mesh>,
 }
